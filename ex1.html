@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""></script>
+  <title>GIST 7130 M06 - Leaflet Ex. 1</title>
+  <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <style>
+    /* Totally unneccessary CSS styling to make it snazzy. */
+    body, html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden; 
+    }
+    body {
+      background-image: url('bg4.png');
+      background-position: center; 
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #text {
+      background-color: rgba(255, 255, 255, 0.7); 
+      padding: 20px; 
+      border-radius: 5px; 
+    }
+    #page-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.223);
+    color: rgb(193, 193, 193);
+    font-size: 0.8em;
+  }
+    /* Leaflet object styling */
+    #mapid {height: 600px; width: 500px; background-color: #a1c1dd;} 
+  </style>
+</head>
+<body>
+   <div id="text">
+     <h1>Leaflet Map: Displaying Coordinates</h1>
+     <h4><i>Click anywhere on the map to show lat / long values.</i></h4>
+  </div>
+  <br>
+  <!-- The map DIV -->
+  <div id="mapid"></div>
+  <!-- Leaflet's JavaScrip -->
+  <!-- Script to create the map and add a base map -->
+  <script>
+     //create a map centered on BCIT
+     const themap = L.map('mapid').setView([49.2510, -123.0011], 14);
+     // add a base map
+     const CyclOSM = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+	     maxZoom: 20,
+	     attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+     }).addTo(themap);
+  </script> 
+  <script>
+    // Applying the .on method to our map opbject to listen for clicks
+    // Run this function every time the event occurs
+    themap.on('click', function(e) {
+    // Assign lat / long values from the event to variables that we can use
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+    // Create a popup at the clicked location and include the coordinates
+      L.popup()
+      .setLatLng(e.latlng)
+      .setContent("Lat: " + lat.toFixed(4) + ", Long: " + lng.toFixed(4))
+      .openOn(themap);
+    });
+  </script>
+  <footer id="page-footer">
+    <p>Background image © Carl Wittmann 2023</p>
+  </footer>
+</body>
+</html>

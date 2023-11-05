@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""></script>
+  <script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
+  <title>GIST 7130 M06 - Leaflet Ex. 2</title>
+  <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <style>
+    /* Totally unneccessary CSS styling to make it snazzy. */
+    body, html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden; 
+    }
+    body {
+      background-image: url('bg4.png');
+      background-position: center; 
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #text {
+      background-color: rgba(255, 255, 255, 0.7); 
+      padding: 20px; 
+      border-radius: 5px; 
+    }
+    #page-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.223);
+    color: rgb(193, 193, 193);
+    font-size: 0.8em;
+  }
+    /* Leaflet object styling */
+    #mapid {height: 600px; width: 500px; background-color: #a1c1dd;} 
+  </style>
+</head>
+<body>
+  <div id="text">
+     <h3>Leaflet Map: Drawing Markers, Circles, Polygons, and geoJSON objects</h1>
+     <h4>Click any object to display details</h4>
+     <p><i>BCIT building footprints extracted from OpenStreetmaps using query tools from https://overpass-turbo.eu</i></p>
+  </div>
+  <br>
+  <!-- The map DIV -->
+  <div id="mapid"></div>
+  <!-- Leaflet's JavaScrip -->
+  <!-- Script to create the map and add a base map -->
+  <script>
+    //create a the map centered on BCIT
+    const themap = L.map('mapid').setView([49.2510, -123.0011], 16);
+    // add a base map
+    const Stadia_StamenToner = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.{ext}', {
+	  minZoom: 0,
+	  maxZoom: 20,
+	  attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	  ext: 'png'
+    }).addTo(themap);
+ </script> 
+  <script>
+    // Styling the geoJSON building footprints extracted from OSM via https://overpass-turbo.eu
+    var bcitStyle = {
+       fillColor: "#FA198B",
+       fillOpacity: 0.4,
+       color: "#FFFF", 
+       weight: 0.3
+    };
+    // Using L.geoJSON to create a layer using the objects loaded using $.getJSON 
+    // Using onEachFeature to add an event listener that displays the "name" property of JSON objects
+    function addGeoJsonLayer(geojsonData) {
+      L.geoJSON(geojsonData, {
+        style: bcitStyle,
+        onEachFeature: function (feature, layer) {
+          if (feature.properties && feature.properties.name) {
+            layer.bindPopup(feature.properties.name);
+          }
+        }
+      }).addTo(themap);
+    }
+    // Loading our geojson file from local directory with jQuery
+    $.getJSON("bcit.geojson", function(data) {
+      addGeoJsonLayer(data);
+    });
+    // Draw a circle that covers my bus stops and bind a pop-up
+    var circle = L.circle([49.2517, -123.0043], {
+      color: '#36D081',
+      fillColor: '#33FF96',
+      fillOpacity: 0.5,
+      radius: 50
+    }).addTo(themap);
+    circle.bindPopup("Bus Stops: 25, 130, 222");
+    // Place a marker over the campus pub
+    var marker = L.marker([49.2514, -123.0017]).addTo(themap);
+    marker.bindPopup("Habitat Pub");
+    // Draw a random polygon and bind a pop-up
+    var polygon = L.polygon([
+      [49.2497, -123.0044],
+      [49.2492, -123.0064],
+      [49.2488, -123.0043]
+    ]).addTo(themap);
+    polygon.bindPopup("A random polygon")
+    // Applying the .on method to our map opbject to listen for clicks
+    // Run this function every time the event occurs
+    themap.on('click', function(e) {
+    // Assign lat / long values from the event to variables that we can use
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+    // Create a popup at the clicked location and include the coordinates
+      L.popup()
+      .setLatLng(e.latlng)
+      .setContent("Lat: " + lat.toFixed(4) + ", Long: " + lng.toFixed(4))
+      .openOn(themap);
+    });
+    </script>
+    <footer id="page-footer">
+      <p>Background image © Carl Wittmann 2023</p>
+    </footer>
+  </body>
+</html>
